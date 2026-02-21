@@ -1,6 +1,7 @@
 const Dish = require('../models/Dish');
 const Order = require('../models/Order');
 const cloudinary = require('../config/cloudinary');
+const jwt = require('jsonwebtoken');
 
 // Admin Login
 exports.postLogin = async (req, res) => {
@@ -9,8 +10,21 @@ exports.postLogin = async (req, res) => {
 
         // Check credentials against environment variables
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            // Set session (keep for backward compatibility if needed)
             req.session.adminLoggedIn = true;
-            res.json({ success: true, message: 'Login successful' });
+
+            // Generate JWT for production/cross-domain reliability
+            const token = jwt.sign(
+                { isAdmin: true, email },
+                process.env.JWT_SECRET || 'your-secret-key',
+                { expiresIn: '24h' }
+            );
+
+            res.json({
+                success: true,
+                message: 'Login successful',
+                token // Return token to frontend
+            });
         } else {
             res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
