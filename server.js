@@ -62,11 +62,13 @@ app.get('/', (req, res) => {
 // API Routes
 const authRoutes = require('./routes/authRoutes');
 const dishRoutes = require('./routes/dishRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/dishes', dishRoutes);
+app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/admin', adminRoutes);
 
