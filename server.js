@@ -1,0 +1,55 @@
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const connectDB = require('./config/db');
+const session = require('express-session');
+
+dotenv.config();
+
+const app = express();
+
+// Connect to MongoDB
+connectDB();
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// CORS Configuration
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
+
+// Session middleware for admin authentication
+app.use(session({
+    secret: process.env.JWT_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        httpOnly: true,
+        secure: false // Set to true in production with HTTPS
+    }
+}));
+
+// Routes
+app.get('/', (req, res) => {
+    res.json({ message: 'Cloud Kitchen API is running' });
+});
+
+// API Routes
+const authRoutes = require('./routes/authRoutes');
+const dishRoutes = require('./routes/dishRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/dishes', dishRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/admin', adminRoutes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
