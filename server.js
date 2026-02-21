@@ -45,6 +45,7 @@ app.use(session({
     secret: process.env.JWT_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,
+    proxy: true, // Required for secure cookies behind proxies like Render
     cookie: {
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         httpOnly: true,
