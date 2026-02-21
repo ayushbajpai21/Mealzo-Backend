@@ -37,6 +37,9 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+// Trust proxy for Render deployment (needed for secure cookies)
+app.set('trust proxy', 1);
+
 // Session middleware for admin authentication
 app.use(session({
     secret: process.env.JWT_SECRET || 'your-secret-key',
@@ -45,7 +48,8 @@ app.use(session({
     cookie: {
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
         httpOnly: true,
-        secure: false // Set to true in production with HTTPS
+        secure: true, // MUST be true for SameSite: none
+        sameSite: 'none' // Essential for cross-site cookies (Vercel to Render)
     }
 }));
 
